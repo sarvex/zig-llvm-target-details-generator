@@ -28,9 +28,9 @@ zig_kws = ["break", "goto", "else"]
 
 def zig_ident_escape(name):
     if zig_ident_re.match(name) is None:
-        name = '@"' + name + '"'
+        name = f'@"{name}"'
     elif name in zig_kws:
-        name = '@"' + name + '"'
+        name = f'@"{name}"'
 
     return name
 
@@ -38,7 +38,7 @@ def llvm_to_zig_name(name):
     name = name.replace("-", "_")
     name = name.replace(".", "_")
     if int_re.match(name) is not None:
-        name = '_' + name
+        name = f'_{name}'
     return name
 
 def generate_zig_code(out_file, arch_name, target_details):
