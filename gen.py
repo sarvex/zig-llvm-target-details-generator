@@ -133,7 +133,7 @@ def main():
     blacklists = {target.target_dir: [] for target in TARGETS}
     if args.blacklist is not None: 
         with open(args.blacklist, "r") as blacklist_file:
-            for line in blacklist_file.readlines():
+            for line in blacklist_file:
                 line = line.strip()
                 if len(line) == 0:
                     continue
@@ -145,11 +145,11 @@ def main():
                 if len(split) != 2:
                     print("[!] Invalid syntax in blacklist file!")
                     sys.exit(1)
-                
+
                 blacklists[split[0]].append(split[1])   
 
     for target in TARGETS:
-        print("= {}".format(target.output_name))
+        print(f"= {target.output_name}")
 
         tablegen_file_path = os.path.join(working_dir, target.tablegen_file_name)
         defs_file_path = os.path.join(working_dir, target.defs_file_name)

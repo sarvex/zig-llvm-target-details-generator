@@ -55,7 +55,7 @@ def is_bit_set(deps, idx):
 def gather_dependencies(deps, features, blacklist):
     # Given a list of features and a dep bitmap, gather a list of dep def_names,
     # in accordance with the blacklist.
-    
+
     features_by_id = {feature.id: feature for feature in features}
 
     dep_def_names = []
@@ -68,9 +68,8 @@ def gather_dependencies(deps, features, blacklist):
                 for dep in blacklisted_deps:
                     if dep not in dep_def_names:
                         dep_def_names.append(dep)
-            else:
-                if feature.def_name not in dep_def_names:
-                    dep_def_names.append(feature.def_name)
+            elif feature.def_name not in dep_def_names:
+                dep_def_names.append(feature.def_name)
 
     return dep_def_names
 
@@ -121,8 +120,8 @@ def parse_info_lines(feature_def_lines, feature_info_lines, cpu_info_lines):
             print("[!] Invalid feature def line (internal error)!", file=sys.stderr)
             sys.exit(1)
 
-        def_name = m.group("def_name")
-        def_value = int(m.group("def_value"))
+        def_name = m["def_name"]
+        def_value = int(m["def_value"])
 
         if def_name == "NumSubtargetFeatures":
             continue
@@ -131,7 +130,7 @@ def parse_info_lines(feature_def_lines, feature_info_lines, cpu_info_lines):
         feature = Feature(def_value, def_name)
         features.append(feature)
         features_by_def_name[feature.def_name] = feature
-    
+
     # "a35", "Cortex-A35 ARM processors", AArch64::ProcA35,    0x20800080800800ULL, 0x0ULL, 0x0ULL,    ,
     feature_info_re = re.compile(
         r'\s*"(?P<pretty_name>.*)",'
@@ -157,16 +156,16 @@ def parse_info_lines(feature_def_lines, feature_info_lines, cpu_info_lines):
             print("[!] Invalid feature info line (internal error)!", file=sys.stderr)
             sys.exit(1)
 
-        def_name = m.group("def_name")
+        def_name = m["def_name"]
 
         feature = features_by_def_name[def_name]
 
-        feature.llvm_name = m.group("pretty_name")
-        feature.description = m.group("description")
+        feature.llvm_name = m["pretty_name"]
+        feature.description = m["description"]
 
-        b0 = int(m.group("b0"), 16)
-        b1 = int(m.group("b1"), 16)
-        b2 = int(m.group("b2"), 16)
+        b0 = int(m["b0"], 16)
+        b1 = int(m["b1"], 16)
+        b2 = int(m["b2"], 16)
 
         feature.dependencies = [b0, b1, b2]
 
@@ -185,17 +184,17 @@ def parse_info_lines(feature_def_lines, feature_info_lines, cpu_info_lines):
     for info_line in cpu_info_lines:
         info_line = info_line.replace("{", "")
         info_line = info_line.replace("}", "")
-        
+
         m = cpu_info_re.match(info_line)
         if m is None:
             print("[!] Invalid cpu info line (internal error)!", file=sys.stderr)
             sys.exit(1)
 
-        llvm_name = m.group("pretty_name")
+        llvm_name = m["pretty_name"]
 
-        b0 = int(m.group("b0"), 16)
-        b1 = int(m.group("b1"), 16)
-        b2 = int(m.group("b2"), 16)
+        b0 = int(m["b0"], 16)
+        b1 = int(m["b1"], 16)
+        b2 = int(m["b2"], 16)
 
         cpus.append(Cpu(llvm_name, [b0, b1, b2]))
 
